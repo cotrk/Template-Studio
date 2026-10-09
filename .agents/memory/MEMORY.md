@@ -1,0 +1,1 @@
+- [Template Studio scope](template-studio-scope.md) — preserve its browser-only static architecture; visible artist branding defaults to TRP8.

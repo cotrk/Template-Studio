@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Template Studio"
+description = "A client-side browser studio for musicians to turn songs into short looping social videos using seeded visual templates, real-time audio-reactive previews, and downloadable project files."
+version = "1.0.0"
+id = "artifacts/template-studio"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25573
+
+[services.development]
+run = "pnpm --filter @workspace/template-studio run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/template-studio", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/template-studio/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25573"
+BASE_PATH = "/"

@@ -1,0 +1,96 @@
+# Template Studio
+
+## What this is
+
+"Template Studio" — a browser tool for musicians to generate short looping
+social-media videos (9:16 and 1:1) from their songs. User picks a visual
+template, uploads audio, tweaks the look, previews live, exports. First user:
+TRP8 (AI hip-hop artist); the tool must work for any music project.
+
+## Stack (non-negotiable)
+
+- React + TypeScript + Vite + Tailwind CSS + shadcn/ui.
+- **100% client-side. No backend, no database, no Supabase.** The app must
+  export as a static site.
+- Canvas rendering via `requestAnimationFrame`. Audio analysis via Web Audio
+  `AnalyserNode` (FFT) with smoothing.
+- State: local component state + localStorage for saved projects. Project
+  save/load also works via JSON file download/upload.
+
+## Design DNA
+
+- **Aesthetic:** dark stage-lighting — near-black canvas, volumetric light
+  leaks, fine particle systems that breathe with the music. Premium and
+  restrained, never EDM-cliché.
+- **References:** Spotify Canvas motion loops (subtle, loop-seamless);
+  Teenage Engineering typographic restraint; concert haze lighting.
+- **Tone words:** dark, premium, kinetic, restrained.
+- **Tokens:** near-black neutrals (darkest `#0e0e11`, never pure black); one
+  OKLCH accent hue per template (amber / cyan / magenta variants); condensed
+  industrial display face for titles + neutral grotesk for meta; minimal
+  radius; 8px spacing grid.
+- **Forbidden:** purple-blue gradients; Winamp-style bar visualizers; glowing
+  centered text; lorem ipsum (write real copy); system fonts; emoji
+  iconography; stock shadcn slate theme; generic footers.
+
+## Motion rules
+
+- Ambient motion built from periodic functions → loops are seamless.
+- Particles and light-leak intensity driven by analyser FFT data; smooth
+  ambient auto-motion when no audio is loaded.
+- DOM animation: transform + opacity only, <200ms, ease-out entrances.
+- Reduced-motion toggle: freeze to a still frame. Honor
+  `prefers-reduced-motion`.
+
+## User flows
+
+1. **Gallery →** grid of template cards (Particle Field, Light Leak, Pulse
+   Grid) → click opens Studio with that template.
+2. **Studio →** canvas preview with 9:16 / 1:1 toggle; audio upload
+   (drag-drop; mp3, wav, ogg, m4a); text inputs for track title + artist
+   (default artist: `TRP8`); accent color picker; sliders for particle
+   density, leak intensity, motion speed; safe-area guides toggle (TikTok /
+   Reels UI occlusion zones); "Generate 3 variations" button → three seeded
+   preview cards, each exportable and reproducible from its seed.
+3. **Export →** record canvas + audio via MediaRecorder (webm download);
+   download project JSON (see schema below).
+
+## Subtitles (optional)
+
+.srt / .vtt upload → parse cues → render as timed text overlays on canvas,
+display face, lower third above the safe-area line.
+
+## Project JSON schema (handoff contract)
+
+```json
+{
+  "version": 1,
+  "templateId": "particle-field | light-leak | pulse-grid",
+  "params": { "seed": 1234, "accentHue": 32, "particleDensity": 0.7, "leakIntensity": 0.5, "motionSpeed": 1.0 },
+  "aspect": "9:16 | 1:1",
+  "durationSec": 30,
+  "audioFileName": "track.mp3",
+  "audioSha256": "…",
+  "textOverlays": { "title": "…", "artist": "TRP8", "position": "lower-third" },
+  "subtitlesFile": "optional.srt | null"
+}
+```
+
+Every parameter needed to reproduce the visuals deterministically from the
+seed must be in `params`. Schema is versioned; bump `version` on breaking
+changes.
+
+## Brand rules
+
+- The artist name is written **TRP8** in all visible copy (never "Trap Eight"
+  — that's only for AI vocal prompts, not visuals).
+- Default artist field value: `TRP8`.
+
+## Quality bar
+
+- Every async state has loading / error / empty UI (no-audio, invalid file,
+  decode failure).
+- Semantic HTML, keyboard-operable controls, visible focus, real `<label>`s
+  on all inputs, WCAG 2.2 AA contrast.
+- Error copy: what happened + what to do next. Never raw backend text.
+- No feature ships depending on Lovable cloud hosting or credits at runtime.
